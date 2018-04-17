@@ -1,13 +1,37 @@
 <!--index.wxml-->
-<view class="container">
-  <view class="userinfo">
-    <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
-    <block wx:else>
-      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </block>
+<view class="container-layout">
+  <view class='top-tips' id='top-tips'>
+    <image class='trumpet-icon' src='../../img/notification.png'></image>
+    <text class='tip-text'>{{warningText}}</text>
+    <image class='right-arrow' src='../../img/right-arrow.png'></image>
   </view>
-  <view class="usermotto">
-    <text class="user-motto">{{motto}}</text>
+
+  <view class='map-wrapper' style='height:{{mapHeight}}'>
+    <map class='map' longitude="{{longitude}}" latitude="{{latitude}}" scale="18" show-location="true" markers="{{markers}}" bindmarkertap="makertap"></map>
+    <cover-view class='cover-layout' bindtap='selfLocationClick'>
+      <cover-image class='self-location' src='../../img/self-location.png'></cover-image>
+    </cover-view>
+  </view>
+
+  <view class='bottom-layout' id='bottom-layout'>
+    <view class='bottom-wrapper'>
+      <view upload-wrapper wx:if='{{showConfirm}}'>
+        <view class='location-wrapper'>
+          <image class='location-icon' src='../../img/location-icon.png'></image>
+          <text class='location-address'>南光路</text>
+        </view>
+        <view class='divider'></view>
+        <view class='info-wrapper'>
+          <textarea class='info-text' placeholder='您想对其他人说些什么？'></textarea>
+          <image class='photo-icon' src='../../img/camera.png'></image>
+        </view>
+        <view>
+          <button class='upload-wraning'>取消</button>
+          <button class='upload-wraning'>确定</button>
+        </view>
+        <button class='upload-wraning'>确定</button>
+      </view>
+      <button class='upload-wraning' wx:if='{{showUpload}}' bindtap='uploadInfoClick'>上传情报</button>
+    </view>
   </view>
 </view>
