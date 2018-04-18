@@ -355,3 +355,18 @@ button::after{
   margin-top: 10rpx;
   background-color: #EEEEEE;
 }
+
+.select-image-wrapper{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F2F2F2;
+}
+
+.show-image{
+  width: 95%;
+  height: 400rpx;
+  margin-top: 10rpx;
+  margin-bottom: 10rpx;
+}

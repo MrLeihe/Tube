@@ -13,6 +13,16 @@ var bottomHeight = 0;
 var windowHeight = 0;
 var mapId = 'myMap';
 var BMap;
+var sourceType = [
+  ['camera'],
+  ['album'],
+  ['camera', 'album']
+]
+var sizeType = [
+  ['compressed'],
+  ['original'],
+  ['compressed', 'original']
+]
 
 Page({
   data: {
@@ -35,7 +45,8 @@ Page({
     selectAddress: '',
     uploadLongitude: '',
     uploadLatitude: '',
-    uploadImage: '',
+    uploadImagePath: '',
+    showUploadImage: false,
   },
 
   onLoad: function () {
@@ -299,6 +310,7 @@ Page({
 
   cancelClick: function () {
     var that = this;
+    that.resetPhoto();
     that.adjustViewStatus(true, false, false);
   },
 
@@ -331,7 +343,7 @@ Page({
         lng: that.data.uploadLongitude,
         address: that.data.selectAddress,
         message: message,
-        image: that.data.uploadImage
+        image: that.data.uploadImagePath
       },
       success: function(res){
         if(res.data.code == 1000){
@@ -340,6 +352,7 @@ Page({
             content: '上传成功',
             showCancel: false
           });
+          that.resetPhoto();
           that.adjustViewStatus(true, false, false);
         }else{
           wx.showModal({
@@ -428,6 +441,40 @@ Page({
   previewImage: function(){
     wx.previewImage({
       urls: ['https://images.unsplash.com/photo-1497163326116-446ff9cbfe51?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=d398dd52d108a4bb45776fb82b1329e6&auto=format&fit=crop&w=800&q=60'],
+    })
+  },
+
+  //选择照片
+  takePhoto: function(){
+    var that = this;
+    consoleUtil.log('takePhoto');
+    wx.chooseImage({
+      sizeType: sizeType[1],
+      count: 1,
+      success: function(res) {
+        consoleUtil.log(res.tempFilePaths[0]);
+        that.setData({
+          uploadImagePath: res.tempFilePaths[0],
+          showUploadImage: true
+        })
+        that.adjustViewStatus(false, true, false);
+      },
+    })
+  },
+
+  //重置照片
+  resetPhoto: function(){
+    var that = this;
+    that.setData({
+      uploadImagePath: '',
+      showUploadImage: false
+    })
+  },
+
+  previewSelectImage:function(){
+    var that = this;
+    wx.previewImage({
+      urls: [that.data.uploadImagePath],
     })
   },
 

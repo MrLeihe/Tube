@@ -25,7 +25,10 @@
           <view class='divider'></view>
           <view class='info-wrapper'>
             <textarea class='info-text' placeholder='您想对其他人说些什么？' name='message'></textarea>
-            <image class='photo-icon' src='../../img/camera.png'></image>
+            <image class='photo-icon' src='../../img/camera.png' bindtap='takePhoto'></image>
+          </view>
+          <view class='select-image-wrapper' wx:if='{{showUploadImage}}'>
+            <image class='show-image' src='{{uploadImagePath}}' bindtap='previewSelectImage'></image>
           </view>
           <view class='action-wrapper'>
             <button class='action-btn' style='background-color:#666666' bindtap='cancelClick'>取消</button>
