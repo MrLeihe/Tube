@@ -7,7 +7,7 @@
   </view>
 
   <view class='map-wrapper' style='height:{{mapHeight}}'>
-    <map class='map' longitude="{{longitude}}" latitude="{{latitude}}" scale="18" show-location="true" markers="{{markers}}" bindmarkertap="makertap"></map>
+    <map class='map' id='myMap' longitude="{{longitude}}" latitude="{{latitude}}" scale="18" show-location="true" markers="{{markers}}" bindmarkertap="makertap" bindcontroltap='controlTap' bindregionchange='regionChange'></map>
     <cover-view class='cover-layout' bindtap='selfLocationClick'>
       <cover-image class='self-location' src='../../img/self-location.png'></cover-image>
     </cover-view>
@@ -16,22 +16,70 @@
   <view class='bottom-layout' id='bottom-layout'>
     <view class='bottom-wrapper'>
       <view upload-wrapper wx:if='{{showConfirm}}'>
-        <view class='location-wrapper'>
-          <image class='location-icon' src='../../img/location-icon.png'></image>
-          <text class='location-address'>南光路</text>
-        </view>
-        <view class='divider'></view>
-        <view class='info-wrapper'>
-          <textarea class='info-text' placeholder='您想对其他人说些什么？'></textarea>
-          <image class='photo-icon' src='../../img/camera.png'></image>
-        </view>
-        <view>
-          <button class='upload-wraning'>取消</button>
-          <button class='upload-wraning'>确定</button>
-        </view>
-        <button class='upload-wraning'>确定</button>
+
+        <form bindsubmit='confirmClick'>
+          <view class='location-wrapper'>
+            <image class='location-icon' src='../../img/location-icon.png'></image>
+            <text class='location-address'>{{selectAddress}}</text>
+          </view>
+          <view class='divider'></view>
+          <view class='info-wrapper'>
+            <textarea class='info-text' placeholder='您想对其他人说些什么？' name='message'></textarea>
+            <image class='photo-icon' src='../../img/camera.png'></image>
+          </view>
+          <view class='action-wrapper'>
+            <button class='action-btn' style='background-color:#666666' bindtap='cancelClick'>取消</button>
+            <button class='action-btn' form-type='submit'>确定</button>
+          </view>
+        </form>
       </view>
       <button class='upload-wraning' wx:if='{{showUpload}}' bindtap='uploadInfoClick'>上传情报</button>
+
+      <view class='comment-layout' wx:if='{{showComment}}'>
+        <view class='warning-info-layout'>
+          <view class='warning-info-wrapper'>
+            <image class='warning-info-icon' src='https://images.unsplash.com/photo-1497163326116-446ff9cbfe51?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=d398dd52d108a4bb45776fb82b1329e6&auto=format&fit=crop&w=800&q=60' bindtap='previewImage'>
+            </image>
+            <view class='warning-content-wrapper'>
+              <view class='warning-address-wrapper'>
+                <image class='info-icon' src='../../img/location-icon.png'></image>
+                <text class='info-address gray-color'>{{infoAddress}}</text>
+              </view>
+              <text class='info-tip'>注意，此处有危险</text>
+            </view>
+          </view>
+
+          <view class='close-wrapper' bindtap='colseCommentClick'>
+            <image class='colse-icon' src='../../img/Close.png'></image>
+          </view>
+        </view>
+        <view class='comment-title'>
+          <text class='coment-count gray-color comment-size'>{{'全部评论(' + commentCount + ')'}}</text>
+          <text class='praise-count comment-size'>{{'赞 ' + praiseCount}}</text>
+        </view>
+        <scroll-view class='comnent-scroll' scroll-y='true'>
+          <view class='comment-item-wrapper' wx:for='{{commentList}}' wx:for-item='item' wx:key='index'>
+            <view class='comment-item'>
+              <image class='comment-avatar' src='https://wx.qlogo.cn/mmopen/vi_32/FGAgkRPCOS3XC0B94u8usEZ3XH7BG0bAYwOurIMZrIPlSoDric18DQZWYY9qRcjfbpWI3flJOh3Kuur4JM5lVYg/0'></image>
+              <view class='comment-detail-info'>
+                <text class='comment-name'>冲着太阳打喷嚏</text>
+                <text class='comment-content'>大哥666</text>
+                <text class='comment-time'>2-2 13:23</text>
+                <view class='split-line'></view>
+              </view>
+            </view>
+          </view>
+        </scroll-view>
+        <view class='comment-input-layout'>
+          <input class='comment-input' placeholder='期待您的评论....'></input>
+          <view class='praise-wrapper' bindtap='praiseClick'>
+            <image class='share-icon' src='../../img/unPraise.png'></image>
+          </view>
+          <button class='share-wrapper' open-type='share'>
+            <image class='share-icon' src='../../img/share.png'></image>
+          </button>
+        </view>
+      </view>
     </view>
   </view>
 </view>
