@@ -18,7 +18,7 @@
       <view upload-wrapper wx:if='{{showConfirm}}'>
 
         <form bindsubmit='confirmClick'>
-          <view class='location-wrapper'>
+          <view class='location-wrapper' bindtap='chooseAddress'>
             <image class='location-icon' src='../../img/location-icon.png'></image>
             <text class='location-address'>{{selectAddress}}</text>
           </view>

@@ -41,7 +41,7 @@ Page({
     infoAddress: '深圳市福田区购物公园腾讯大厦1126室',
     commentCount: 0,
     praiseCount: 0,
-    commentList: [1, 1, ,1, ,1, ,1, 1,],
+    commentList: [1, 1, , 1, , 1, , 1, 1,],
     selectAddress: '',
     uploadLongitude: '',
     uploadLatitude: '',
@@ -92,7 +92,7 @@ Page({
     that.changeMapHeight();
   },
 
-  userLogin: function(){
+  userLogin: function () {
     wx.login({
       success: res => {
         //var that = this;
@@ -132,7 +132,7 @@ Page({
               }
             },
             fail: res => {
-              
+
             }
           })
         } else {
@@ -228,24 +228,25 @@ Page({
     BMap = new bdMapSdk.BMapWX({
       ak: constant.bdAK
     });
-    
-    that.requestLocation();
-    var markers = [{
-      id: 1,
-      latitude: '22.525204',
-      longitude: '113.93042',
-      iconPath: '../../img/dog-yellow.png',
-      width: 40,
-      height: 40,
-    }]
 
-    that.setData({
-      markers: markers
-    })
+    that.getCenterLocation();
+    that.requestLocation();
+    // var markers = [{
+    //   id: 1,
+    //   latitude: '22.525204',
+    //   longitude: '113.93042',
+    //   iconPath: '../../img/dog-yellow.png',
+    //   width: 40,
+    //   height: 40,
+    // }]
+
+    // that.setData({
+    //   markers: markers
+    // })
   },
 
   //请求地理位置
-  requestLocation: function(){
+  requestLocation: function () {
     var that = this;
     wx.getLocation({
       success: function (res) {
@@ -261,6 +262,10 @@ Page({
   makertap: function (e) {
     consoleUtil.log('点击了marker');
     consoleUtil.log(e);
+    //点击了中心点 mraker, 不做处理
+    if (e.markerId == -1){
+      return;
+    }
     var that = this;
     that.adjustViewStatus(false, false, true);
   },
@@ -270,35 +275,16 @@ Page({
     var that = this;
     that.adjustViewStatus(false, true, false);
     that.setUploadLocation(that.data.latitude, that.data.longitude);
-    that.regeocoding();
+    that.regeocoding(that.data.latitude, that.data.longitude);
   },
 
-  setUploadLocation: function (latitude, longitude){
+  //更新上传坐标点
+  setUploadLocation: function (latitude, longitude) {
     var that = this;
     that.setData({
       uploadLatitude: latitude,
       uploadLongitude: longitude
     })
-  },
-
-  //地址解析
-  regeocoding: function(){
-    var that = this;
-    var fail = function (data) {
-      consoleUtil.log(data);
-    };
-    var success = function (data) {
-      consoleUtil.log(data);
-      var address = data.originalData.result.formatted_address;
-      consoleUtil.log(address);
-      that.setData({
-        selectAddress: address
-      })
-    }
-    BMap.regeocoding({
-      fail: fail,
-      success: success,
-    });
   },
 
   //回到中心点
@@ -319,7 +305,7 @@ Page({
     var that = this;
     consoleUtil.log(res);
     var message = res.detail.value.message.trim();
-    if (!that.data.uploadLatitude || !that.data.uploadLongitude){
+    if (!that.data.uploadLatitude || !that.data.uploadLongitude) {
       wx.showModal({
         title: '提示',
         content: '请选择上传地点',
@@ -327,7 +313,7 @@ Page({
       })
       return;
     }
-    if (!message){
+    if (!message) {
       wx.showModal({
         title: '提示',
         content: '请说点什么吧',
@@ -338,15 +324,15 @@ Page({
     wx.request({
       url: API.obtainUrl(API.uploadInfoUrl),
       header: app.globalData.header,
-      data:{
+      data: {
         lat: that.data.uploadLatitude,
         lng: that.data.uploadLongitude,
         address: that.data.selectAddress,
         message: message,
         image: that.data.uploadImagePath
       },
-      success: function(res){
-        if(res.data.code == 1000){
+      success: function (res) {
+        if (res.data.code == 1000) {
           wx.showModal({
             title: '提示',
             content: '上传成功',
@@ -354,7 +340,7 @@ Page({
           });
           that.resetPhoto();
           that.adjustViewStatus(true, false, false);
-        }else{
+        } else {
           wx.showModal({
             title: '提示',
             content: res.msg,
@@ -362,7 +348,7 @@ Page({
           });
         }
       },
-      fail: function(res){
+      fail: function (res) {
         wx.showModal({
           title: '提示',
           content: res.msg,
@@ -373,15 +359,15 @@ Page({
   },
 
   //根据经纬度获取周围情报
-  queryMarkerInfo: function(){
+  queryMarkerInfo: function () {
     wx.request({
       url: API.obtainUrl(API.queryInfoUrl),
       header: app.globalData.header,
-      data:{
+      data: {
         lat: that.data.latitude,
         lng: that.data.longitude
       },
-      success: function(res){
+      success: function (res) {
         if (res.data.code == 1000) {
           consoleUtil.log('请求marker点成功');
         } else {
@@ -392,7 +378,7 @@ Page({
           });
         }
       },
-      fail: function(res){
+      fail: function (res) {
         wx.showModal({
           title: '提示',
           content: res.msg,
@@ -413,12 +399,12 @@ Page({
   },
 
   //关闭评论
-  colseCommentClick: function(){
-    var that =this;
+  colseCommentClick: function () {
+    var that = this;
     that.adjustViewStatus(true, false, false);
   },
 
-  adjustViewStatus: function(uploadStatus, confirmStatus, commentStatus){
+  adjustViewStatus: function (uploadStatus, confirmStatus, commentStatus) {
     var that = this;
     that.setData({
       showUpload: uploadStatus,
@@ -429,29 +415,29 @@ Page({
   },
 
   //点赞
-  praiseClick: function(){
+  praiseClick: function () {
 
   },
 
-  onShareAppMessage: function(res){
+  onShareAppMessage: function (res) {
 
   },
 
   //预览图片
-  previewImage: function(){
+  previewImage: function () {
     wx.previewImage({
       urls: ['https://images.unsplash.com/photo-1497163326116-446ff9cbfe51?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=d398dd52d108a4bb45776fb82b1329e6&auto=format&fit=crop&w=800&q=60'],
     })
   },
 
   //选择照片
-  takePhoto: function(){
+  takePhoto: function () {
     var that = this;
     consoleUtil.log('takePhoto');
     wx.chooseImage({
       sizeType: sizeType[1],
       count: 1,
-      success: function(res) {
+      success: function (res) {
         consoleUtil.log(res.tempFilePaths[0]);
         that.setData({
           uploadImagePath: res.tempFilePaths[0],
@@ -463,7 +449,7 @@ Page({
   },
 
   //重置照片
-  resetPhoto: function(){
+  resetPhoto: function () {
     var that = this;
     that.setData({
       uploadImagePath: '',
@@ -471,10 +457,73 @@ Page({
     })
   },
 
-  previewSelectImage:function(){
+  previewSelectImage: function () {
     var that = this;
     wx.previewImage({
       urls: [that.data.uploadImagePath],
+    })
+  },
+
+  //拖动地图回调
+  regionChange: function (res) {
+    var that = this;
+    // 改变中心点位置  
+    if (res.type == "end") {
+      that.getCenterLocation();
+    }
+  },
+
+  //得到中心点坐标，并设置中心点 marker
+  getCenterLocation: function(){
+    var that = this;
+    var mapCtx = wx.createMapContext(mapId);
+    mapCtx.getCenterLocation({
+      success: function (res) {
+        console.log(res);
+        that.setData({
+          'markers[0]': {
+            iconPath: "../../img/drag-icon.png",
+            id: -1,
+            latitude: res.latitude,
+            longitude: res.longitude,
+            width: 35,
+            height: 35,
+          }
+        })
+        that.regeocoding(res.latitude, res.longitude);
+        that.setUploadLocation(res.latitude, res.longitude);
+      }
+    })
+  },
+
+  //地址解析
+  regeocoding: function (lat, lng) {
+    var that = this;
+    var location = lat + "," + lng;
+    var fail = function (data) {
+      consoleUtil.log(data);
+    };
+    var success = function (data) {
+      consoleUtil.log(data);
+      var address = data.originalData.result.formatted_address + ' ' + data.originalData.result.sematic_description;
+      consoleUtil.log(address);
+      that.setData({
+        selectAddress: address
+      })
+    }
+    consoleUtil.log('location---------------->' + location);
+    BMap.regeocoding({
+      location: location,
+      fail: fail,
+      success: success,
+    });
+  },
+
+  //选择地址
+  chooseAddress: function(){
+    var that = this;
+    wx.navigateTo({
+      url: '../chooseAddress/chooseAddress',
     })
   },
 
