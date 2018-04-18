@@ -113,7 +113,7 @@
 
 .photo-icon {
   width: 50rpx;
-  height: 50rpx;
+  height: 40rpx;
   position: absolute;
   bottom: 10rpx;
   right: 14rpx;
