@@ -6,8 +6,8 @@ var domain;
 
 //domainName 后面拼接的接口名
 function obtainUrl(url){
-  if(debug){
-    domain = 'https://wxapi.benpaobao.com/';
+  if(!debug){
+    domain = 'https://traffic.benpaobao.com/';
   }else{
     domain = 'http://192.168.1.114:8000/';
   }
