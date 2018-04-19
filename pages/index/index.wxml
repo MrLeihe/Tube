@@ -1,6 +1,6 @@
 <!--index.wxml-->
 <view class="container-layout">
-  <view class='top-tips' id='top-tips'>
+  <view class='top-tips' id='top-tips' wx:if='{{showTopTip}}'>
     <image class='trumpet-icon' src='../../img/notification.png'></image>
     <text class='tip-text'>{{warningText}}</text>
     <image class='right-arrow' src='../../img/right-arrow.png'></image>
@@ -36,7 +36,7 @@
           </view>
         </form>
       </view>
-      <button class='upload-wraning' wx:if='{{showUpload}}' bindtap='uploadInfoClick'>上传情报</button>
+      <button class='upload-wraning' wx:if='{{showUpload}}' bindtap='uploadInfoClick'>上传地理位置</button>
 
       <view class='comment-layout' wx:if='{{showComment}}'>
         <view class='warning-info-layout'>

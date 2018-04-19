@@ -32,7 +32,8 @@ Page({
     longitude: '',
     latitude: '',
     markers: [],
-    warningText: '东滨路有狗！18:23',
+    showTopTip: false,
+    warningText: '',
     showUpload: true,
     showConfirm: false,
     showComment: false,
@@ -157,8 +158,10 @@ Page({
           //res就是 所有标签为mjltest的元素的信息 的数组
           consoleUtil.log(res);
           count += 1;
-          topHeight = res[0].height;
-          that.setMapHeight(count);
+          if (that.data.showTopTip){
+            topHeight = res[0].height;
+            that.setMapHeight(count);
+          }
         })
 
         var query = wx.createSelectorQuery();
@@ -254,6 +257,8 @@ Page({
           latitude: res.latitude,
           longitude: res.longitude,
         })
+        //初始化后由于未知原因默认不在当前位置，先处理
+        //that.selfLocationClick();
       },
     })
   },
@@ -321,41 +326,78 @@ Page({
       })
       return;
     }
-    wx.request({
-      url: API.obtainUrl(API.uploadInfoUrl),
-      header: app.globalData.header,
-      data: {
-        lat: that.data.uploadLatitude,
-        lng: that.data.uploadLongitude,
-        address: that.data.selectAddress,
-        message: message,
-        image: that.data.uploadImagePath
-      },
-      success: function (res) {
-        if (res.data.code == 1000) {
-          wx.showModal({
-            title: '提示',
-            content: '上传成功',
-            showCancel: false
-          });
-          that.resetPhoto();
-          that.adjustViewStatus(true, false, false);
-        } else {
-          wx.showModal({
-            title: '提示',
-            content: res.msg,
-            showCancel: false
-          });
-        }
-      },
-      fail: function (res) {
+    //成功
+    var success = function(res){
+      consoleUtil.log(res.data);
+      var data = res.data;
+      if (typeof (data) == 'string'){
+        data = JSON.parse(data);
+      }
+      consoleUtil.log(data);
+      if (data.code == 1000) {
+        wx.showModal({
+          title: '提示',
+          content: '上传成功',
+          showCancel: false
+        });
+        that.resetPhoto();
+        that.adjustViewStatus(true, false, false);
+      } else {
         wx.showModal({
           title: '提示',
           content: res.msg,
           showCancel: false
         });
       }
+    }
+    var fail = function (res) {
+      consoleUtil.log('fail---------->' + res.data.code);
+      wx.showModal({
+        title: '提示',
+        content: res.msg,
+        showCancel: false
+      });
+    }
+
+    var complete = function(res){
+      wx.hideLoading();
+    }
+    wx.showLoading({
+      title: '提交中...',
     })
+    //有图用uploadFile
+    if (that.data.uploadImagePath){
+      consoleUtil.log('uploadFile----------->');
+      wx.uploadFile({
+        url: API.obtainUrl(API.uploadInfoUrl),
+        header: app.globalData.header,
+        filePath: that.data.uploadImagePath,
+        name: 'image',
+        formData: {
+          lat: that.data.uploadLatitude,
+          lng: that.data.uploadLongitude,
+          address: that.data.selectAddress,
+          message: message
+        },
+        success: success,
+        fail: fail,
+        complete: complete
+      })
+    }else{
+      wx.request({
+        url: API.obtainUrl(API.uploadInfoUrl),
+        header: app.globalData.header,
+        data: {
+          lat: that.data.uploadLatitude,
+          lng: that.data.uploadLongitude,
+          address: that.data.selectAddress,
+          message: message
+        },
+        success: success,
+        fail: fail,
+        complete: complete
+      })
+    }
   },
 
   //根据经纬度获取周围情报
@@ -390,11 +432,6 @@ Page({
 
   //点击控件时触发
   controlTap: function () {
-
-  },
-
-  //视野发生变化时触发
-  regionChange: function () {
 
   },
 
@@ -486,8 +523,8 @@ Page({
             id: -1,
             latitude: res.latitude,
             longitude: res.longitude,
-            width: 35,
-            height: 35,
+            width: 40,
+            height: 40,
           }
         })
         that.regeocoding(res.latitude, res.longitude);
@@ -505,7 +542,7 @@ Page({
     };
     var success = function (data) {
       consoleUtil.log(data);
-      var address = data.originalData.result.formatted_address + ' ' + data.originalData.result.sematic_description;
+      var address = data.originalData.result.formatted_address + '\n\r' + data.originalData.result.sematic_description;
       consoleUtil.log(address);
       that.setData({
         selectAddress: address
@@ -522,9 +559,9 @@ Page({
   //选择地址
   chooseAddress: function(){
     var that = this;
-    wx.navigateTo({
-      url: '../chooseAddress/chooseAddress',
-    })
+    // wx.navigateTo({
+    //   url: '../chooseAddress/chooseAddress',
+    // })
   },
 
   getUserInfo: function (e) {
